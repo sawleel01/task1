@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "./ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -20,24 +19,27 @@ import {
   MapPin,
   PoundSterlingIcon as Pound,
 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import ApplicationDetail from "./application-detail";
 
-export default function Body1() {
+export default function Component() {
   const [searchTerm, setSearchTerm] = useState("");
   const [draftFilter, setDraftFilter] = useState(false);
   const [unsuccessfulFilter, setUnsuccessfulFilter] = useState(false);
   const [sortOrder, setSortOrder] = useState("last-update");
   const [reverseOrder, setReverseOrder] = useState(false);
+  const [currentView, setCurrentView] = useState<"list" | "detail">("list");
 
   const applications = [
     {
       id: "17948766",
-      jobRef: "209-MIC-1676",
-      status: "draft",
+      jobRef: "290-MIC-1676",
+      status: "Draft",
       title: "Staff Nurse",
       employer: "Imperial College Healthcare NHS Trust",
-      speciality: "Haemodialysis",
+      specialty: "Haemodialysis",
       type: "Permanent, Full time - 37.5 hours per week",
-      salary: "£34,521 - £41,956 pa inclusive(Band5)",
+      salary: "£34,521 - £41,956 pa inclusive(Band 5)",
       location: "London, Central Middlesex Hospital",
       submitBefore: "23-Jun-2025 23:59",
       lastUpdate: "23-Jun-2025",
@@ -61,17 +63,21 @@ export default function Body1() {
     const matchesSearch =
       app.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.employer.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesDraft = !draftFilter || app.status === "draft";
+    const matchesDraft = !draftFilter || app.status === "Draft";
     const matchesUnsuccessful =
       !unsuccessfulFilter || app.status === "Unsuccessful";
 
     return matchesSearch && matchesDraft && matchesUnsuccessful;
   });
 
+  if (currentView === "detail") {
+    return <ApplicationDetail onBack={() => setCurrentView("list")} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Warning Banner */}
         <Card className="bg-orange-50 border-orange-200">
           <div className="p-6 pt-0">
             <div className="flex items-start gap-3">
@@ -99,6 +105,7 @@ export default function Body1() {
           </div>
         </Card>
 
+        {/* Applications Header */}
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold text-gray-900">Applications</h1>
           <Badge variant="secondary" className="bg-teal-100 text-teal-800">
@@ -106,6 +113,7 @@ export default function Body1() {
           </Badge>
         </div>
 
+        {/* Search and Filters */}
         <Card>
           <div className="p-6 pt-0">
             <div className="flex flex-col lg:flex-row gap-6">
@@ -160,6 +168,7 @@ export default function Body1() {
           </div>
         </Card>
 
+        {/* Results Header */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-600">Displaying results 1-2 of 2</p>
           <div className="flex items-center gap-4">
@@ -187,6 +196,7 @@ export default function Body1() {
           </div>
         </div>
 
+        {/* Application Cards */}
         <div className="space-y-4">
           {filteredApplications.map((app) => (
             <Card key={app.id} className="relative">
@@ -266,7 +276,10 @@ export default function Body1() {
                 )}
 
                 <div className="flex justify-end">
-                  <Button className="bg-teal-600 hover:bg-teal-700">
+                  <Button
+                    className="bg-teal-600 hover:bg-teal-700"
+                    onClick={() => setCurrentView("detail")}
+                  >
                     {app.status === "Draft"
                       ? "Complete your application"
                       : "Manage application"}
